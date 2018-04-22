@@ -56,9 +56,9 @@ else
 				az vm disk detach -g eu-we-prod-rg --vm-name $BROTHER -n $SHAREDDISK
 				#Attach and mount disk to me
 				az vm disk attach -g eu-we-prod-rg --vm-name $HOSTNAME --disk $SHAREDDISK
-				pvscan
-				vgscan
-				lvscan
+				/sbin/pvscan
+				/sbin/pvgscan
+				/sbin/plvscan
 			fi
 			mount /dev/vgcentryspool/lvcentryspool /pool-app
 			echo "$DATE File systems is mounted"
