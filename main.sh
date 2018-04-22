@@ -53,15 +53,24 @@ else
 			if [[ "$DISKMANAGER" != "$HOSTNAME" ]] 
 				then
 				#Detach disk from brother
+				echo "$DATE Detaching $SHAREDDISK from $BROTHER"
 				az vm disk detach -g eu-we-prod-rg --vm-name $BROTHER -n $SHAREDDISK
 				#Attach and mount disk to me
+				echo "$DATE Attaching $SHAREDDISK to $HOSTNAME"
 				az vm disk attach -g eu-we-prod-rg --vm-name $HOSTNAME --disk $SHAREDDISK
-				pvscan
-				vgscan
-				lvscan
+				/sbin/pvscan
+				/sbin/vgscan
+				/sbin/lvscan
 			fi
-			mount /dev/vgcentryspool/lvcentryspool /pool-app
-			echo "$DATE File systems is mounted"
+			ISVG=$(ls -al /dev/ | grep -c vgcentryspool)
+			if  [[ $ISVG -eq 1 ]]
+				then
+				echo "$DATE Mounting $SHAREDDISK"
+				mount /dev/vgcentryspool/lvcentryspool /pool-app
+				echo "$DATE File systems is mounted"
+			else
+				"$DATE Cant mount pool-app. Most probrablly the disk could not be attached"
+			fi
 		fi
 				
 		#Check if node is up
