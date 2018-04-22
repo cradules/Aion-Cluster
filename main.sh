@@ -61,6 +61,7 @@ else
 				/sbin/pvscan
 				/sbin/vgscan
 				/sbin/lvscan
+<<<<<<< HEAD
 			fi
 			ISVG=$(ls -al /dev/ | grep -c vgcentryspool)
 			if  [[ $ISVG -eq 1 ]]
@@ -70,6 +71,8 @@ else
 				echo "$DATE File systems is mounted"
 			else
 				"$DATE Cant mount pool-app. Most probrablly the disk could not be attached"
+=======
+>>>>>>> 285d1be1a1f2fa0c4142e91091cd995f8582da90
 			fi
 		fi
 				
