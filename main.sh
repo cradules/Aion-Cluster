@@ -57,8 +57,8 @@ else
 				#Attach and mount disk to me
 				az vm disk attach -g eu-we-prod-rg --vm-name $HOSTNAME --disk $SHAREDDISK
 				/sbin/pvscan
-				/sbin/pvgscan
-				/sbin/plvscan
+				/sbin/vgscan
+				/sbin/lvscan
 			fi
 			mount /dev/vgcentryspool/lvcentryspool /pool-app
 			echo "$DATE File systems is mounted"
