@@ -5,7 +5,7 @@
 # stays or goes to sleep!
 ##############################################################################
 
-
+cd "$(dirname "$0")"
 . ./cluster.cfg
 
 ISMOUNT=$(grep -c -e pool-app -e nfs /etc/mtab)
