@@ -8,13 +8,25 @@
 
 . ./cluster.cfg
 
+ISMOUNT=$(grep -c -e pool-app -e nfs /etc/mtab)
+
 #Check if brother is alive
 timeout 2 bash -c "</dev/tcp/$BROTHER/3333" >/dev/null 2>&1
 RC=$(echo $?)
 if [ $RC -eq 0 ]
-	then
+        then
         echo "$DATE Brother $BROTHER is up" >> $LOGFILE
-	exit 0
+        echo "$DATE Checkling NFS" >> $LOGFILE
+        if [[ $ISMOUNT -eq 0 ]]
+                then
+                echo "$DATE Good..NFS not mounted" >> $LOGFILE
+        else
+                echo "$DATE Found..NFS as  mounted" >> $LOGFILE
+                echo "$DATE Unmounting..." >> $LOGFILE
+                /usr/local/bin/aionmount stop
+                exit 0
+        fi
+
 else
 	echo "$DATE Brother $BROTHER is down" >> $LOGFILE
 	echo "$DATE Checking services if running locally" >> $LOGFILE
