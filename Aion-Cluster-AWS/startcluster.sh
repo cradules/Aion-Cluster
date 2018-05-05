@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 ISMOUNT=$(grep -c -e pool-app -e nfs /etc/mtab)
 ROLE=$(ls /usr/local/cluster/role/)
 
+start(){
+
 	if [[ $ROLE = "master" ]]
 		then
 		#Check if slave is down
@@ -67,11 +69,31 @@ ROLE=$(ls /usr/local/cluster/role/)
 					elif [[ $RC -ne 0 && $y -eq 2 ]]
 						then
 						#Mount NFS
-						/usr/local/bin/aionmount start
+						#Check if NFS is mounted
+                       				 if [[ $ISMOUNT -eq 0 ]]
+                                			then
+                                			/usr/local/bin/aionmount start
+                        			else
+                                			echo "NFS is already mounted..."
+                        			fi
 						#Start node
-						systemctl start nodepool
+						timeout 2 bash -c "</dev/tcp/localhost/8545" >/dev/null 2>&1
+						RC=$(echo $?)
+						if [[ $RC -ne 0 ]]
+							then
+							systemctl restart nodepool
+						else
+							echo "Node is already runing..."
+						fi
 						#Start Pool
-						systemctl start aionpool
+						timeout 2 bash -c "</dev/tcp/localhost/3333" >/dev/null 2>&1
+						RC=$(echo $?)
+						if [[ $RC -ne 0 ]]
+							then
+							systemctl restart aionpool
+						else
+							echo "Pool is already runing..."
+						fi
 						exit 0
 					else 
 						echo "Application is running on master"
@@ -84,3 +106,36 @@ ROLE=$(ls /usr/local/cluster/role/)
 
 		
 	fi
+}
+
+stop(){
+#Start Pool
+systemctl stop aionpool
+
+#Stop node
+systemctl stop nodepool
+
+#Umount NFS
+/usr/local/bin/aionmount stop
+}
+
+
+case "$1" in
+        start)
+		echo "Starting services..."
+		start
+        ;;
+        stop)
+                echo "Stopping services.." >&2
+                stop
+        ;;
+        retart)
+                echo "Stopping services.." >&2
+                stop
+                echo 'Starting service…' >&2
+                start
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+esac
+
