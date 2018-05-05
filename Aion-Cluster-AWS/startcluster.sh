@@ -49,11 +49,11 @@ ROLE=$(ls /usr/local/cluster/role/)
 			ping -c 2 $BROTHER
 			RC=$(echo $?)
 			#If is not up wait 60 secounds and check again
-			if [[$RC -ne 0 && $i -ne 2 ]]
+			if [[ $RC -ne 0 && $i -ne 2 ]]
 				then
 				sleep 60
 			#If the VM respond to ping check application
-			elif [[$RC -eq 0 ]] 
+			elif [[ $RC -eq 0 ]] 
 				then
 				for ((y=0; y<=2; y++))
 				do
@@ -67,13 +67,15 @@ ROLE=$(ls /usr/local/cluster/role/)
 					elif [[ $RC -ne 0 && $y -eq 2 ]]
 						then
 						#Mount NFS
-						systemctl start aionmount
+						/usr/local/bin/aionmount start
 						#Start node
 						systemctl start nodepool
 						#Start Pool
 						systemctl start aionpool
+						exit 0
 					else 
 						echo "Application is running on master"
+						exit 0
 					fi
 				done
 			
