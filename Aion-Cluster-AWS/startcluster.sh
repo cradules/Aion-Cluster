@@ -37,7 +37,7 @@ start(){
 				then
 				/usr/local/bin/aionmount start
 			else
-				echo "NFS is mounted"
+				echo "NFS is already mounted"
 			fi
 			
 			timeout 2 bash -c "</dev/tcp/localhost/8545" >/dev/null 2>&1
@@ -46,7 +46,7 @@ start(){
 				then
 				systemctl restart nodepool
 			else
-				echo "Node is up"
+				echo "Node is already running"
 			fi
 			timeout 2 bash -c "</dev/tcp/localhost/3333" >/dev/null 2>&1
 			RC=$(echo $?)
@@ -54,7 +54,7 @@ start(){
 				then
 				systemctl restart aionpool
 			else
-				echo "Pool is up"
+				echo "Pool is already running"
 			fi
 		else
 			echo "$BROTHER is up"
@@ -102,7 +102,7 @@ start(){
 							then
 							systemctl restart nodepool
 						else
-							echo "Node is already runing..."
+							echo "Node is already running..."
 						fi
 						#Start Pool
 						timeout 2 bash -c "</dev/tcp/localhost/3333" >/dev/null 2>&1
@@ -111,7 +111,7 @@ start(){
 							then
 							systemctl restart aionpool
 						else
-							echo "Pool is already runing..."
+							echo "Pool is already running..."
 						fi
 						exit 0
 					else 
@@ -142,7 +142,7 @@ systemctl stop nodepool
 case "$1" in
         start)
 		echo "Starting services..."
-		sleep 2
+		sleep 1 
 		start
         ;;
         stop)
