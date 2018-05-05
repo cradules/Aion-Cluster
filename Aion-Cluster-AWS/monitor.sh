@@ -55,7 +55,7 @@ else
 		if [[ $ISMOUNT -ne 1 ]]
 			then
 			#Attach and mount disk to me
-			echo "$DATE Mounting $SHAREDDISK" >> $LOGFILE
+			echo "$DATE Mounting NFS" >> $LOGFILE
 			/usr/local/bin/aionmount start	
 		else
 			echo "$DATE Cant mount pool-app. Most probrablly the disk could not be attached" >> $LOGFILE
