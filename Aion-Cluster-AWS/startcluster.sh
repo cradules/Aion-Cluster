@@ -1,11 +1,28 @@
 #!/bin/bash
-set -x
+#set -x
 cd "$(dirname "$0")"
 . ./cluster.cfg
 
 ISMOUNT=$(grep -c -e pool-app -e nfs /etc/mtab)
 ROLE=$(ls /usr/local/cluster/role/)
 
+countdown() {
+	row=2
+	col=2
+        msg="Making sure master is not runnig, pleae be pacient ${1}..."
+        clear
+        tput cup $row $col
+        echo -n "$msg"
+        l=${#msg}
+        l=$(( l+$col ))
+        for x in {30..1}
+        do
+                tput cup $row $l
+                echo -n "$x"
+                sleep 1
+        done
+	clear
+}
 start(){
 
 	if [[ $ROLE = "master" ]]
@@ -48,12 +65,13 @@ start(){
 		#Check if Master VM is up
 		for ((i=0; i<2; i++))
 		do
-			ping -c 2 $BROTHER
+			ping -c 2 $BROTHER > /dev/null 2>&1 
 			RC=$(echo $?)
 			#If is not up wait 60 secounds and check again
 			if [[ $RC -ne 0 && $i -ne 2 ]]
 				then
-				sleep 60
+				#sleep 60
+				countdown
 			#If the VM respond to ping check application
 			elif [[ $RC -eq 0 ]] 
 				then
@@ -64,7 +82,8 @@ start(){
 					#If the application is not up wait 60 secounds and check again
 					if [[ $RC -ne 0 && $y -ne 2 ]] 
 						then
-						sleep 60
+						#sleep 60
+						countdown
 					#If the application is not up in 120 secounds on master start on slave
 					elif [[ $RC -ne 0 && $y -eq 2 ]]
 						then
@@ -123,6 +142,7 @@ systemctl stop nodepool
 case "$1" in
         start)
 		echo "Starting services..."
+		sleep 2
 		start
         ;;
         stop)
